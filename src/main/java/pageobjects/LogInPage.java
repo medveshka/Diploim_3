@@ -1,4 +1,4 @@
-package PageObjects.PO;
+package pageobjects;
 
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -9,11 +9,11 @@ import org.openqa.selenium.WebDriver;
 
 
 public class LogInPage  {
-     By emailField = By.name("name");
-     By passField = By.name("Пароль");
-     By loginButtonOnLoginPage = By.cssSelector(".button_button__33qZ0");
+    private By emailField = By.name("name");
+    private By passField = By.name("Пароль");
+    private By loginButtonOnLoginPage = By.xpath("//button[.='Войти']");;
 
-     By toMain = By.xpath("//div[@class='AppHeader_header__logo__2D0X2']/a[@href='/']");
+    private By makeOrderButton = By.xpath("//button[.='Оформить заказ']");
 
 
 
@@ -38,10 +38,7 @@ public class LogInPage  {
 
     }
 
-    public void clickToMain() {
-        driver.findElement(toMain).click();
 
-    }
 
 
     public void logIn(String email, String password) {
@@ -60,9 +57,15 @@ public class LogInPage  {
     }
 
 
+    public void waitForMakeOrderButton() {
 
+        waitForLoad(makeOrderButton);
+    }
 
+    public void waitLogInPageLoaded() {
 
+        waitForLoad(loginButtonOnLoginPage);
+    }
 
 
 }

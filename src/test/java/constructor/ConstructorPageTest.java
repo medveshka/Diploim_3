@@ -1,7 +1,11 @@
-package Constructor;
+package constructor;
 
 
-import PageObjects.PO.*;
+import io.restassured.response.Response;
+import pageobjects.ConstructorPage;
+import pageobjects.LogInPage;
+import pageobjects.RegisterPage;
+
 import io.qameta.allure.junit4.DisplayName;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
@@ -9,12 +13,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.util.concurrent.TimeUnit;
+import utils.RoutesConstants;
+import utils.User;
+import utils.UserClient;
 
-import static PageObjects.Itils.RandomString.randomString;
-import static org.junit.Assert.assertEquals;
+
+
+import static utils.BrowserVariants.createWebDriver;
+import static utils.RandomString.randomString;
+
 
 public class ConstructorPageTest {
 
@@ -22,20 +30,23 @@ public class ConstructorPageTest {
     public String email = randomString(5) + "@mail.ru";
     public String password = randomString(8);
     public String name = randomString(5);
+    public String accessToken;
 
 
     @Before
     public void setDriver(){
-        System.setProperty("webdriver.chrome.driver","C:\\chromedriver\\chromedriver.exe");
-        driver = new ChromeDriver();
+        driver = createWebDriver();
 
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+
+
+
+        User user = new User(email, password, name);
+        Response response = UserClient.createUser(user);
+        accessToken = response.then().extract().body().path("accessToken");
+
+        driver.get(RoutesConstants.LOGIN);
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 
-        RegisterPage objRegisterInPage = new RegisterPage(driver);
-        objRegisterInPage.register(name, email, password);
-        driver.get("https://stellarburgers.nomoreparties.site/login");
         LogInPage objLogInPage = new LogInPage(driver);
         objLogInPage.logIn(email, password);
 
@@ -72,6 +83,7 @@ public class ConstructorPageTest {
 
     @After
     public void teardown() {
+        UserClient.deleteUser(accessToken);
         driver.quit();
     }
 

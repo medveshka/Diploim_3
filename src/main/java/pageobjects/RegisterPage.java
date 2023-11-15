@@ -1,4 +1,4 @@
-package PageObjects.PO;
+package pageobjects;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,12 +12,12 @@ public class RegisterPage {
         this.driver = driver;
     }
 
-    By emailField = By.xpath("//fieldset[2]//input[@name='name']");
-    By passField = By.name("Пароль");
-    By nameField = By.xpath("//fieldset[1]//input[@name='name']");
-    By registerButton = By.xpath("//button[.='Зарегистрироваться']");
-    By succesHeader = By.cssSelector(".button_button__33qZ0");
-    By incorrectPass = By.xpath(".//p[text()='Некорректный пароль']");
+    private By emailField = By.xpath("//fieldset[2]//input[@name='name']");
+    private By passField = By.name("Пароль");
+    private By nameField = By.xpath("//fieldset[1]//input[@name='name']");
+    private By registerButton = By.xpath("//button[.='Зарегистрироваться']");
+    private By succesHeader = By.cssSelector(".button_button__33qZ0");
+    private By incorrectPass = By.xpath(".//p[text()='Некорректный пароль']");
 
 
 
@@ -64,6 +64,10 @@ public class RegisterPage {
     public void waitForIncorrectMess() {
 
         waitForLoad(incorrectPass);
+    }
+
+    public String getPassErrorText(){
+        return driver.findElement(incorrectPass).getText();
     }
 
 

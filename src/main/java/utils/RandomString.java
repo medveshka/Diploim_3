@@ -1,4 +1,4 @@
-package PageObjects.Itils;
+package utils;
 
 import java.util.Random;
 

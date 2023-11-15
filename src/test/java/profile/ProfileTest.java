@@ -1,11 +1,12 @@
-package Profile;
+package profile;
 
 
 
-import PageObjects.PO.LogInPage;
-import PageObjects.PO.MainPage;
-import PageObjects.PO.PersonalAreaPage;
-import PageObjects.PO.RegisterPage;
+import io.restassured.response.Response;
+import org.junit.Assert;
+import pageobjects.LogInPage;
+import pageobjects.MainPage;
+import pageobjects.PersonalAreaPage;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.openqa.selenium.WebDriver;
@@ -13,12 +14,16 @@ import org.openqa.selenium.WebDriver;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.chrome.ChromeDriver;
+
+import utils.RoutesConstants;
+import utils.User;
+import utils.UserClient;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
-import static PageObjects.Itils.RandomString.randomString;
+import static utils.BrowserVariants.createWebDriver;
+import static utils.RandomString.randomString;
 
 public class ProfileTest {
 
@@ -26,19 +31,20 @@ public class ProfileTest {
     public String email = randomString(5) + "@mail.ru";
     public String password = randomString(8);
     public String name = randomString(5);
+    public String accessToken;
 
 
     @Before
     public void setDriver(){
-        System.setProperty("webdriver.chrome.driver","C:\\chromedriver\\chromedriver.exe");
-        driver = new ChromeDriver();
+        driver = createWebDriver();
 
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+
+        User user = new User(email, password, name);
+        Response response = UserClient.createUser(user);
+        accessToken = response.then().extract().body().path("accessToken");
+
+        driver.get(RoutesConstants.LOGIN);
         driver.manage().window().maximize();
-
-        RegisterPage objRegisterInPage = new RegisterPage(driver);
-        objRegisterInPage.register(name, email, password);
-        driver.get("https://stellarburgers.nomoreparties.site/login");
         LogInPage objLogInPage = new LogInPage(driver);
         objLogInPage.logIn(email, password);
 
@@ -55,6 +61,8 @@ public class ProfileTest {
         objMain.waitForPersonalAreaButton();
         objMain.clickPersonalAreaButton();
         perAr.waitForExitButton();
+        Assert.assertEquals(RoutesConstants.PROFILE, driver.getCurrentUrl());
+
 
     }
 
@@ -68,7 +76,7 @@ public class ProfileTest {
         perAr.waitForExitButton();
         objMain.clickConstructorButton();
 
-        assertEquals( "https://stellarburgers.nomoreparties.site/", driver.getCurrentUrl());
+        assertEquals(RoutesConstants.MAIN_PAGE, driver.getCurrentUrl());
 
     }
 
@@ -82,13 +90,19 @@ public class ProfileTest {
         objMain.clickPersonalAreaButton();
         perAr.waitForExitButton();
         perAr.logOut();
+        LogInPage logInObj = new LogInPage(driver);
+        logInObj.waitLogInPageLoaded();
+        Assert.assertEquals(RoutesConstants.LOGIN, driver.getCurrentUrl());
 
 
 
     }
     @After
+
     public void teardown() {
-        driver.quit();
+
+        UserClient.deleteUser(accessToken);
+       // driver.quit();
     }
 
 

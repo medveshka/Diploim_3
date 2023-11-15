@@ -1,4 +1,4 @@
-package PageObjects.PO;
+package pageobjects;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -7,9 +7,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class MainPage {
 
-    By personalAreaButton = By.xpath("//a[.='Личный Кабинет']");
-    By logInButtonOnMainPage = By.cssSelector(".button_button__33qZ0");
-    By constructorButton = By.xpath("//a[.='Конструктор']");
+    private By personalAreaButton = By.xpath("//a[.='Личный Кабинет']");
+    private By logInButtonOnMainPage = By.cssSelector(".button_button__33qZ0");
+    private By constructorButton = By.xpath("//a[.='Конструктор']");
 
 
     private WebDriver driver;

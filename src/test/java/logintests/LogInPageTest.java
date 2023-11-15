@@ -1,9 +1,11 @@
-package LogInTests;
+package logintests;
 
-import PageObjects.PO.LogInPage;
-import PageObjects.PO.MainPage;
-import PageObjects.PO.RegisterPage;
-import PageObjects.PO.ResetPassPage;
+import io.restassured.response.Response;
+import org.junit.Assert;
+import pageobjects.LogInPage;
+import pageobjects.MainPage;
+
+import pageobjects.ResetPassPage;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.openqa.selenium.WebDriver;
@@ -11,10 +13,13 @@ import org.openqa.selenium.WebDriver;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.chrome.ChromeDriver;
+import utils.RoutesConstants;
+import utils.User;
+import utils.UserClient;
 
 
-import static PageObjects.Itils.RandomString.randomString;
+import static utils.BrowserVariants.createWebDriver;
+import static utils.RandomString.randomString;
 
 public class LogInPageTest {
 
@@ -23,24 +28,19 @@ public class LogInPageTest {
     public String email = randomString(5) + "@mail.ru";
     public String password = randomString(8);
     public String name = randomString(5);
+    public String accessToken;
 
     @Before
     public void setUp(){
 
 
-        System.setProperty("webdriver.chrome.driver","C:\\chromedriver\\chromedriver.exe");
-        driver = new ChromeDriver();
+        driver = createWebDriver();
 
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+        driver.get(RoutesConstants.REGISTER);
         driver.manage().window().maximize();
-
-        RegisterPage objRegisterInPage = new RegisterPage(driver);
-        objRegisterInPage.register(name, email, password);
-
-
-
-
-
+        User user = new User(email, password, name);
+        Response response = UserClient.createUser(user);
+        accessToken = response.then().extract().body().path("accessToken");
 
     }
 
@@ -48,8 +48,16 @@ public class LogInPageTest {
     @Test
     public void logInFromRegisterPageTest(){
 
+
+        driver.get(RoutesConstants.LOGIN);
         LogInPage objLogInPage = new LogInPage(driver);
+        objLogInPage.waitLogInPageLoaded();
+
         objLogInPage.logIn(email, password);
+        objLogInPage.waitForMakeOrderButton();
+
+        Assert.assertEquals(RoutesConstants.MAIN_PAGE, driver.getCurrentUrl());
+
 
 
     }
@@ -57,12 +65,14 @@ public class LogInPageTest {
     @DisplayName("Успешная авторизация по кнопке «Войти в аккаунт» на главной")
     @Test
     public void logInFromMainPageLogInButtonTest(){
-        driver.get("https://stellarburgers.nomoreparties.site");
+        driver.get(RoutesConstants.MAIN_PAGE);
 
         MainPage objMain = new MainPage(driver);
         LogInPage objLogInPage = new LogInPage(driver);
         objMain.clickLoginButton();
         objLogInPage.logIn(email, password);
+        objLogInPage.waitForMakeOrderButton();
+        Assert.assertEquals(RoutesConstants.MAIN_PAGE, driver.getCurrentUrl());
 
 
     }
@@ -70,13 +80,15 @@ public class LogInPageTest {
     @DisplayName("Успешная авторизация  через кнопку «Личный кабинет")
     @Test
     public void logInFromMainPagePersonalAreaButtonTest(){
-        driver.get("https://stellarburgers.nomoreparties.site");
+        driver.get(RoutesConstants.MAIN_PAGE);
 
         MainPage objMain = new MainPage(driver);
         LogInPage objLogInPage = new LogInPage(driver);
         objMain.clickPersonalAreaButton();
 
         objLogInPage.logIn(email, password);
+        objLogInPage.waitForMakeOrderButton();
+        Assert.assertEquals(RoutesConstants.MAIN_PAGE, driver.getCurrentUrl());
 
 
     }
@@ -84,20 +96,24 @@ public class LogInPageTest {
     @DisplayName("Успешная авторизация через восстановленеи пароля")
     @Test
     public void logInFromResetPassButtonTest(){
-        driver.get("https://stellarburgers.nomoreparties.site/forgot-password");
+        driver.get(RoutesConstants.RESTORE_PASS);
 
         ResetPassPage objReset = new ResetPassPage(driver);
         LogInPage objLogInPage = new LogInPage(driver);
         objReset.clickLogInButton();
 
         objLogInPage.logIn(email, password);
+        objLogInPage.waitForMakeOrderButton();
+        Assert.assertEquals(RoutesConstants.MAIN_PAGE, driver.getCurrentUrl());
 
 
 
     }
 
-    @After
-    public void teardown() {
+  @After
+  public void teardown() {
+
+        UserClient.deleteUser(accessToken);
         driver.quit();
-    }
+}
 }

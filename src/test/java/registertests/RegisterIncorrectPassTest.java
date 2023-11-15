@@ -1,15 +1,17 @@
-package RegisterTests;
+package registertests;
 
-import PageObjects.PO.RegisterPage;
+import org.junit.Assert;
+import pageobjects.RegisterPage;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 
-import static PageObjects.Itils.RandomString.randomString;
+import utils.RoutesConstants;
+
+import static utils.BrowserVariants.createWebDriver;
+import static utils.RandomString.randomString;
 
 public class RegisterIncorrectPassTest {
 
@@ -23,11 +25,8 @@ public class RegisterIncorrectPassTest {
 
     @Before
     public void setDriver(){
-        ChromeOptions chromeOptions = new ChromeOptions();
-
-        System.setProperty("webdriver.chrome.driver","C:\\chromedriver\\chromedriver.exe");
-        driver = new ChromeDriver();
-        driver.get("https://stellarburgers.nomoreparties.site/register");
+        driver = createWebDriver();
+        driver.get(RoutesConstants.REGISTER);
         driver.manage().window().maximize();
 
 
@@ -40,6 +39,8 @@ public class RegisterIncorrectPassTest {
         RegisterPage objRegisterObj = new RegisterPage(driver);
         objRegisterObj.register(name, email, password);
         objRegisterObj.waitForIncorrectMess();
+        Assert.assertEquals("Некорректный пароль", objRegisterObj.getPassErrorText());
+        Assert.assertEquals(RoutesConstants.REGISTER, driver.getCurrentUrl());
 
 
     }

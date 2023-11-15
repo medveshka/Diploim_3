@@ -1,14 +1,14 @@
-package PageObjects.PO;
+package pageobjects;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class ConstructorPage {
-    By constructorButton = By.xpath("//a[.='Конструктор']");
+    private By constructorButton = By.xpath("//a[.='Конструктор']");
 
-    By sauceTab = By.xpath("//div[.='Соусы']");
-    By feelingTab = By.xpath("//div[.='Начинки']");
-    By bunTab = By.xpath("//div[.='Булки']");
+    private By sauceTab = By.xpath("//div[.='Соусы']");
+    private By feelingTab = By.xpath("//div[.='Начинки']");
+    private By bunTab = By.xpath("//div[.='Булки']");
 
 
 
@@ -18,10 +18,6 @@ public class ConstructorPage {
         this.driver = driver;
     }
 
-    public void clickConstructorButton() {
-        driver.findElement(constructorButton).click();
-
-    }
 
 
 
