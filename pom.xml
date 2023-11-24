@@ -63,6 +63,18 @@
             <artifactId>selenium-support</artifactId>
             <version>3.141.59</version>
         </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-chrome-driver</artifactId>
+            <version>3.141.59</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>5.6.2</version>
+
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -96,6 +108,8 @@
                         <artifactId>aspectjweaver</artifactId>
                         <version>${aspectj.version}</version>
                     </dependency>
+
+
                 </dependencies>
             </plugin>
             <plugin>
